@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#173d2b">
+<meta name="description" content="แอปคำนวณปริมาณน้ำและจำนวนเที่ยวบินสำหรับโดรนพ่นยาทุเรียน">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>แอปคำนวนน้ำโดรนพ่นยาทุเรียน</title>
+<style>
+:root{--green:#17452f;--green2:#246b45;--bg:#f3f6f2;--card:#fff;--ink:#18251d;--muted:#65736a;--line:#dce5dd;--soft:#eaf3ec;--danger:#a33b32}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom)}
+main{max-width:760px;margin:0 auto;padding:16px 0 36px}.hero{background:linear-gradient(135deg,#123b28,#2d7549);color:#fff;padding:22px 20px;border-radius:22px;margin-bottom:14px}.hero small{opacity:.82}.hero h1{font-size:23px;line-height:1.3;margin:7px 0}.hero p{font-size:13px;opacity:.85;margin:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 3px 12px #183d2410}
+h2{font-size:17px;margin:0 0 13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}label{font-size:13px;font-weight:650;color:#34443a}input{width:100%;padding:12px;border:1px solid #cbd8ce;border-radius:11px;font-size:16px;background:#fff;color:var(--ink);min-width:0}input:focus{outline:2px solid #78ad87;border-color:#43865a}.hint{font-size:11px;color:var(--muted)}
+.results{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:var(--soft);padding:13px;border-radius:13px}.metric span{font-size:12px;color:var(--muted);display:block}.metric strong{font-size:25px;display:block;color:var(--green);margin-top:4px;overflow-wrap:anywhere}.metric em{font-size:11px;color:var(--muted);font-style:normal}
+.primary{background:var(--green);color:white;border:0;border-radius:12px;padding:13px 16px;font-size:15px;font-weight:700;width:100%;cursor:pointer}.secondary{background:#eef4ef;color:var(--green);border:1px solid #cddbd0;border-radius:11px;padding:11px 13px;font-weight:650;cursor:pointer}.danger{color:var(--danger);background:#fff4f2;border-color:#f0d1cc}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.trip{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}.trip:last-child{border:0}.muted{color:var(--muted);font-size:12px;line-height:1.5}.history-item{border-top:1px solid var(--line);padding:12px 0}.history-item:first-child{border-top:0}.history-item strong{display:block}.history-item small{color:var(--muted)}.empty{text-align:center;color:var(--muted);padding:16px;font-size:13px}.tabs{display:flex;gap:8px;margin:12px 0}.tabs button{flex:1}.foot{text-align:center;color:var(--muted);font-size:11px;padding:12px}
+@media(max-width:420px){.grid{grid-template-columns:1fr 1fr}.hero h1{font-size:21px}.metric strong{font-size:22px}}
+</style>
+</head>
+<body>
+<main>
+<header class="hero">
+  <small>เครื่องมือวางแผนการพ่นในสวน</small>
+  <h1>แอปคำนวนน้ำโดรนพ่นยาทุเรียน</h1>
+  <p>คำนวณปริมาณน้ำ เวลาพ่น จำนวนเที่ยว และบันทึกประวัติการทำงาน</p>
+</header>
+
+<section class="card">
+<h2>1. ข้อมูลการบินและการพ่น</h2>
+<div class="grid">
+ <div class="field full"><label for="plot">ชื่อแปลง / บล็อก</label><input id="plot" placeholder="เช่น แปลง 2"></div>
+ <div class="field"><label for="date">วันที่พ่น</label><input id="date" type="date"></div>
+ <div class="field"><label for="distance">ระยะทางบินพ่น (เมตร)</label><input id="distance" type="number" min="0" step="any" value="1041.8"></div>
+ <div class="field"><label for="speed">ความเร็วโดรน (ม./วินาที)</label><input id="speed" type="number" min="0" step="any" value="2"></div>
+ <div class="field"><label for="flow">อัตราพ่น (ลิตร/นาที)</label><input id="flow" type="number" min="0" step="any" value="20"></div>
+ <div class="field"><label for="capacity">ความจุถัง (ลิตร)</label><input id="capacity" type="number" min="0.01" step="any" value="50"></div>
+ <div class="field"><label for="passes">จำนวนรอบ/แนวบิน</label><input id="passes" type="number" min="1" step="1" value="1"></div>
+</div>
+<p class="hint">ระยะทางรวม = ระยะทางที่กรอก × จำนวนรอบ/แนวบิน (ใช้กรณีบินซ้ำเส้นทางเดิม)</p>
+<div class="tabs">
+<button class="secondary" id="reset">คืนค่าเริ่มต้น</button>
+<button class="primary" id="save">บันทึกผลการพ่น</button>
+</div>
+</section>
+
+<section class="card">
+<h2>2. ผลการคำนวณ</h2>
+<div class="results">
+ <div class="metric"><span>ปริมาณน้ำรวม</span><strong id="water">173.63</strong><em>ลิตร</em></div>
+ <div class="metric"><span>จำนวนเที่ยวเติมน้ำ</span><strong id="trips">4</strong><em>เที่ยว</em></div>
+ <div class="metric"><span>เวลาพ่นต่อเนื่อง</span><strong id="time">08:41</strong><em>นาที:วินาที</em></div>
+ <div class="metric"><span>น้ำเที่ยวสุดท้าย</span><strong id="last">23.63</strong><em>ลิตร</em></div>
+</div>
+<div style="margin-top:14px">
+ <strong style="font-size:14px">แผนการเติมน้ำ</strong>
+ <div id="tripList"></div>
+</div>
+<p class="muted" id="formula" style="margin:12px 0 0">คำนวณจากระยะทาง ÷ ความเร็ว × อัตราพ่น โดยสมมติว่าพ่นต่อเนื่องตลอดเส้นทาง</p>
+</section>
+
+<section class="card">
+<div class="row"><h2 style="margin:0">3. ประวัติการพ่น</h2><button class="secondary danger" id="clear" style="flex:0 0 auto">ลบประวัติ</button></div>
+<div id="history"><div class="empty">ยังไม่มีประวัติการพ่น</div></div>
+</section>
+<p class="foot">ข้อมูลบันทึกไว้ในอุปกรณ์นี้ • ไม่รวมเวลาหยุดพ่น ช่วงเลี้ยวกลับ หรือการบินที่ไม่พ่น</p>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const ids=['plot','date','distance','speed','flow','capacity','passes'];
+const today=new Date(); $('date').value=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+function n(id){return Number($(id).value)}
+function fmt(x){return Number(x).toLocaleString('th-TH',{maximumFractionDigits:2})}
+function calc(){
+ const distance=n('distance'),speed=n('speed'),flow=n('flow'),capacity=n('capacity'),passes=Math.max(1,Math.floor(n('passes')||1));
+ const valid=[distance,speed,flow,capacity].every(Number.isFinite)&&distance>=0&&speed>0&&flow>=0&&capacity>0;
+ if(!valid){$('water').textContent='—';$('trips').textContent='—';$('time').textContent='—';$('last').textContent='—';$('tripList').innerHTML='<p class="muted">กรุณากรอกตัวเลขให้ถูกต้อง และความเร็ว/ความจุถังต้องมากกว่า 0</p>';return null}
+ const totalDistance=distance*passes,seconds=totalDistance/speed,water=seconds/60*flow,trips=water>0?Math.ceil(water/capacity):0,last=water>0?water-(trips-1)*capacity:0;
+ $('water').textContent=fmt(water);$('trips').textContent=trips.toLocaleString('th-TH');
+ $('time').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(Math.round(seconds%60)).padStart(2,'0');
+ $('last').textContent=fmt(last);
+ $('tripList').innerHTML=trips?Array.from({length:trips},(_,i)=>`<div class="trip"><span>เที่ยวที่ ${i+1}</span><strong>${fmt(Math.min(capacity,water-i*capacity))} ลิตร</strong></div>`).join(''):'<p class="muted">ไม่ต้องใช้น้ำ</p>';
+ $('formula').textContent=`ระยะทางรวม ${fmt(totalDistance)} เมตร ÷ ${fmt(speed)} ม./วินาที × ${fmt(flow)} ลิตร/นาที ÷ 60 = ${fmt(water)} ลิตร`;
+ return {distance:totalDistance,speed,flow,capacity,passes,seconds,water,trips,last};
+}
+ids.slice(2).forEach(id=>$(id).addEventListener('input',calc));
+$('reset').onclick=()=>{ $('plot').value='';$('distance').value='1041.8';$('speed').value='2';$('flow').value='20';$('capacity').value='50';$('passes').value='1';calc(); };
+function getHistory(){try{return JSON.parse(localStorage.getItem('durianDroneHistory')||'[]')}catch(e){return[]}}
+function renderHistory(){
+ const arr=getHistory();
+ $('history').innerHTML=arr.length?arr.map((x,i)=>`<div class="history-item"><strong>${esc(x.plot||'ไม่ระบุแปลง')} — ${fmt(x.water)} ลิตร</strong><small>${esc(x.date)} · ${x.trips} เที่ยว · ${x.time}</small></div>`).join(''):'<div class="empty">ยังไม่มีประวัติการพ่น</div>';
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('save').onclick=()=>{const r=calc();if(!r)return;const arr=getHistory();arr.unshift({plot:$('plot').value.trim(),date:$('date').value,water:r.water,trips:r.trips,time:$('time').textContent});localStorage.setItem('durianDroneHistory',JSON.stringify(arr.slice(0,100)));renderHistory();alert('บันทึกประวัติการพ่นแล้ว');};
+$('clear').onclick=()=>{if(confirm('ต้องการลบประวัติการพ่นทั้งหมดในอุปกรณ์นี้หรือไม่?')){localStorage.removeItem('durianDroneHistory');renderHistory();}};
+calc();renderHistory();
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body></html>
